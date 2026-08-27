@@ -1,0 +1,246 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 6mm;
+  }
+
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body, #root, main {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Skrytí UI */
+  header, footer, nav, button, .no-print, [role="dialog"], [role="banner"], select, input,
+  .toolbar, .subject-list, .requirements-section, .legend, .filter-controls {
+    display: none !important;
+  }
+
+  /* Skrýt všechny nevybrané paralelky při tisku */
+  .print-hide-block {
+    display: none !important;
+  }
+
+  /* Zobrazit pouze vybrané bloky */
+  .print-show-block {
+    display: flex !important;
+  }
+
+  /* Kontejner */
+  .schedule-grid {
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Mřížka pro všech 14 slotů + 1 denní sloupec */
+  table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+    border-spacing: 1px !important;
+    background-color: #cbd5e1 !important;
+  }
+
+  /* Záhlaví s časy */
+  thead th {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-size: 8px !important;
+    font-weight: 800 !important;
+    padding: 3px 2px !important;
+    text-align: center !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  /* Dny */
+  td:first-child {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 4px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+  }
+
+  td {
+    background: #ffffff !important;
+    min-height: 52px !important;
+    height: 52px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 2px !important;
+    vertical-align: top !important;
+  }
+
+  /* Karty předmětů jako relativní kontejner */
+  .schedule-block {
+    position: relative !important;
+    padding: 3px 4px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  /* Spodní řádek natvrdo ukotvený 4px od spodu */
+  .schedule-block > div:last-child {
+    position: absolute !important;
+    bottom: 4px !important;
+    left: 4px !important;
+    right: 4px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-top: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    line-height: 1 !important;
+  }
+
+  /* Učitel */
+  .schedule-block > div:last-child span:first-child {
+    font-size: 7.5px !important;
+    line-height: 1 !important;
+    color: #0f172a !important;
+    font-weight: 600 !important;
+  }
+
+  /* Sportoviště / Místnost */
+  .schedule-block > div:last-child span:last-child {
+    font-size: 7px !important;
+    line-height: 1 !important;
+    padding: 0.5px 2px !important;
+    background-color: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+  }
+
+  .schedule-block > div {
+    line-height: 1.1 !important;
+  }
+
+  /* Přednášky - Modrá */
+  [class*="bg-blue-900"],
+  [class*="bg-blue-100"],
+  [class*="bg-blue-700"] {
+    background-color: #dbeafe !important;
+    border: 1.5px solid #2563eb !important;
+  }
+
+  /* Cvičení - Zelená */
+  [class*="bg-green-900"],
+  [class*="bg-green-100"],
+  [class*="bg-green-700"] {
+    background-color: #dcfce7 !important;
+    border: 1.5px solid #16a34a !important;
+  }
+
+  /* Semináře - Fialová */
+  [class*="bg-purple-900"],
+  [class*="bg-purple-100"],
+  [class*="bg-purple-700"] {
+    background-color: #f3e8ff !important;
+    border: 1.5px solid #9333ea !important;
+  }
+
+  /* Laboratoře - Oranžová */
+  [class*="bg-orange-900"],
+  [class*="bg-orange-100"],
+  [class*="bg-orange-700"],
+  [class*="bg-orange-600"] {
+    background-color: #ffedd5 !important;
+    border: 1.5px solid #ea580c !important;
+  }
+
+  /* VŠECHNY TEXTY UVNITŘ KARET - Tmavé a ostré */
+  .schedule-grid *,
+  .schedule-grid span,
+  .schedule-grid p,
+  .schedule-grid div,
+  .schedule-grid [class*="text-white"],
+  .schedule-grid [class*="text-gray-"],
+  .schedule-grid [class*="text-orange-"],
+  .schedule-grid [class*="text-blue-"],
+  .schedule-grid [class*="text-emerald-"] {
+    color: #0f172a !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+  }
+
+  .schedule-grid .font-extrabold,
+  .schedule-grid .font-bold {
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    color: #000000 !important;
+  }
+
+  /* Badge (PŘEDN / CVIČ / SPORT) */
+  .schedule-grid span[class*="border"],
+  .schedule-grid span[class*="bg-white\\/10"],
+  .schedule-grid .badge {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+    border-color: rgba(0, 0, 0, 0.25) !important;
+    color: #000000 !important;
+    font-size: 7px !important;
+    font-weight: 800 !important;
+    padding: 0.5px 2.5px !important;
+  }
+
+  /* Čas / Katedra */
+  .schedule-grid .font-mono {
+    font-size: 7.5px !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+  }
+
+  /* Učitel */
+  .schedule-grid .truncate,
+  .schedule-grid .text-xs {
+    font-size: 8px !important;
+    color: #0f172a !important;
+    font-weight: 600 !important;
+  }
+
+  /* Učebna v rohu */
+  .schedule-grid [class*="bg-white"] {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    color: #000000 !important;
+    font-size: 7.5px !important;
+    font-weight: 700 !important;
+    padding: 0 2.5px !important;
+  }
+
+  /* Skrýt scrollbar */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
