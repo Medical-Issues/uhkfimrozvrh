@@ -509,7 +509,7 @@ function App() {
 
   const filteredData = getFilteredSchedule();
   const dayOptions = ['all', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-  const dayLabels = { all: 'Všechny dny', Mon: 'Pondělí', Tue: 'Úterý', Wed: 'Středa', Thu: 'Čtvrtek', Fri: 'Pátek', Po: 'Pondělí', Út: 'Úterý', St: 'Středa', Čt: 'Čtvrtek', Pá: 'Pátek' };
+  const dayLabels = { all: 'Všechny dny', Mon: 'Pondělí', Tue: 'Úterý', Wed: 'Středa', Thu: 'Čtvrtek', Fri: 'Pátek', Po: 'Pondělí', Ut: 'Úterý', St: 'Středa', Ct: 'Čtvrtek', Pa: 'Pátek' };
   const typeOptions = ['all', 'PREDN', 'CVIC', 'SEM', 'LAB'];
   const typeLabels = { all: 'Všechny typy', PREDN: 'Přednášky', CVIC: 'Cvičení', SEM: 'Semináře', LAB: 'Laboratoře' };
 
