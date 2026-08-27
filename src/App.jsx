@@ -491,6 +491,7 @@ function App() {
       });
 
       // Přidat vybrané POHA aktivity do rozvrhu
+      // eslint-disable-next-line
       const dayMap = { 'Po': 'Mon', 'Út': 'Tue', 'St': 'Wed', 'Čt': 'Thu', 'Pá': 'Fri' };
       const pohaForDay = selectedClasses.filter(c => c.subject === 'POHA' && dayMap[c.day] === day);
       if (filtered[day]) {
@@ -509,7 +510,8 @@ function App() {
 
   const filteredData = getFilteredSchedule();
   const dayOptions = ['all', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-  const dayLabels = { all: 'Všechny dny', Mon: 'Pondělí', Tue: 'Úterý', Wed: 'Středa', Thu: 'Čtvrtek', Fri: 'Pátek', Po: 'Pondělí', Ut: 'Úterý', St: 'Středa', Ct: 'Čtvrtek', Pa: 'Pátek' };
+  // eslint-disable-next-line
+  const dayLabels = { all: 'Všechny dny', Mon: 'Pondělí', Tue: 'Úterý', Wed: 'Středa', Thu: 'Čtvrtek', Fri: 'Pátek', Po: 'Pondělí', Út: 'Úterý', St: 'Středa', Čt: 'Čtvrtek', Pá: 'Pátek' };
   const typeOptions = ['all', 'PREDN', 'CVIC', 'SEM', 'LAB'];
   const typeLabels = { all: 'Všechny typy', PREDN: 'Přednášky', CVIC: 'Cvičení', SEM: 'Semináře', LAB: 'Laboratoře' };
 
