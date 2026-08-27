@@ -10,7 +10,6 @@ const ScheduleBlock = ({
   onClick 
 }) => {
   const isLecture = item.type === 'PREDN' || item.courseCode?.includes('-P/');
-  const isExercise = item.type === 'CVIC' || item.courseCode?.includes('-C/');
   const isPoha = item.subject === 'POHA' || item.katedra === 'KRCH' || item.katedra === 'KTV';
 
   // Extrakce katedry a čísla paralelky
@@ -35,8 +34,7 @@ const ScheduleBlock = ({
     }).join(', ');
   };
 
-  const fullTeacher = resolveTeacherName(item.teacher, teachersMap) || item.teacher || 'Nezadáno';
-  const fullActionCode = item.courseCode || `${katedra ? katedra + '/' : ''}${item.subject}-${isLecture ? 'P' : 'C'}/01`;
+  const shortTeacher = isPoha ? (item.teacher || 'KRCH') : getShortTeacher(item.teacher);
 
   // Logika zvýraznění:
   const isSubjectFocused = selectedSubject === item.subject;
@@ -60,8 +58,6 @@ const ScheduleBlock = ({
   const badgeLabel = isPoha 
     ? (item.sportName || 'Sport') 
     : isLecture ? 'Předn' : 'Cvič';
-
-  const shortTeacher = isPoha ? (item.teacher || 'KRCH') : getShortTeacher(item.teacher);
 
   const isSelectedBlock = isSelected || isPoha;
 
