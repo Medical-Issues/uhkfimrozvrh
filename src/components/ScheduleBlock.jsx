@@ -43,7 +43,9 @@ const ScheduleBlock = ({
   const isAnySubjectFocused = Boolean(selectedSubject);
   const isDimmed = isAnySubjectFocused && !isSubjectFocused;
 
-  const cardStyle = isPoha
+  const cardStyle = isDimmed
+    ? 'bg-gray-800/30 border-gray-600/50 text-gray-400 opacity-50'
+    : isPoha
     ? 'bg-orange-950/40 border-orange-500/80 text-orange-100 hover:bg-orange-900/50 hover:border-orange-400'
     : isLecture
     ? 'bg-blue-900/30 border-blue-500/80 text-blue-100 hover:bg-blue-900/50 hover:border-blue-400'
