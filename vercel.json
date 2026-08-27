@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/rozvrhy/:path*",
-      "destination": "https://stag.uhk.cz/rozvrhy/:path*"
+      "source": "/api/stag/:path*",
+      "destination": "https://stagws.uhk.cz/:path*"
     },
     {
-      "source": "/api/stag/:path*",
-      "destination": "https://stag.uhk.cz/:path*"
+      "source": "/api/rozvrhy/:path*",
+      "destination": "https://fim.uhk.cz/rozvrhy/:path*"
     },
     {
       "source": "/(.*)",
