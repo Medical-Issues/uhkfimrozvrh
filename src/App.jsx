@@ -63,6 +63,11 @@ function App() {
   const [hasSharedData, setHasSharedData] = useState(false);
   const [previewData, setPreviewData] = useState(null);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [scheduleChanged, setScheduleChanged] = useState(false);
+  const [changedProgramName, setChangedProgramName] = useState('');
+  const [changedTimestamp, setChangedTimestamp] = useState('');
+  const [programTimestamps, setProgramTimestamps] = useState({});
+  const [programLastVisited, setProgramLastVisited] = useState({});
 
   // Detekce URL parametrů při startu
   useEffect(() => {
@@ -150,6 +155,22 @@ function App() {
       try {
         const fetchedPrograms = await fetchProgramList();
         setPrograms(fetchedPrograms);
+
+        // Načíst timestampy pro všechny programy z localStorage
+        const timestamps = {};
+        const lastVisited = {};
+        fetchedPrograms.forEach(program => {
+          const timestamp = localStorage.getItem(`scheduleTimestamp_${program.id}`);
+          const visited = localStorage.getItem(`scheduleLastVisited_${program.id}`);
+          if (timestamp) {
+            timestamps[program.id] = timestamp;
+          }
+          if (visited) {
+            lastVisited[program.id] = visited;
+          }
+        });
+        setProgramTimestamps(timestamps);
+        setProgramLastVisited(lastVisited);
       } catch (err) {
         // Fallback na samplePrograms
       } finally {
@@ -159,6 +180,13 @@ function App() {
     loadPrograms();
   }, []);
 
+  // Hash funkce pro detekci změn v rozvrhu
+  const generateScheduleHash = (scheduleData) => {
+    if (!scheduleData || !scheduleData.schedule) return '';
+    const scheduleString = JSON.stringify(scheduleData.schedule);
+    return scheduleString.length.toString() + scheduleString.slice(0, 100);
+  };
+
   const loadSchedule = async (programId) => {
     if (!programId) {
       setScheduleData(null);
@@ -167,9 +195,49 @@ function App() {
 
     setLoading(true);
     setError(null);
-    
+
     try {
       const data = await fetchStagSchedule(programId);
+
+      // Detekce změn v rozvrhu
+      const newHash = generateScheduleHash(data);
+      const savedHash = localStorage.getItem(`scheduleHash_${programId}`);
+      const savedTimestamp = localStorage.getItem(`scheduleTimestamp_${programId}`);
+      const newTimestamp = new Date().toISOString();
+      const newLastVisited = new Date().toISOString();
+
+      // Vždy aktualizovat last visited timestamp
+      localStorage.setItem(`scheduleLastVisited_${programId}`, newLastVisited);
+      setProgramLastVisited(prev => ({
+        ...prev,
+        [programId]: newLastVisited
+      }));
+
+      if (savedHash && savedHash !== newHash) {
+        // Změna detekována - zobrazit notifikaci a aktualizovat timestamp
+        const programName = programs.find(p => p.id === programId)?.name || programId;
+        setChangedProgramName(programName);
+        setChangedTimestamp(savedTimestamp || newTimestamp);
+        setScheduleChanged(true);
+
+        localStorage.setItem(`scheduleHash_${programId}`, newHash);
+        localStorage.setItem(`scheduleTimestamp_${programId}`, newTimestamp);
+
+        setProgramTimestamps(prev => ({
+          ...prev,
+          [programId]: newTimestamp
+        }));
+      } else if (!savedHash) {
+        // První návštěva - uložit hash a timestamp
+        localStorage.setItem(`scheduleHash_${programId}`, newHash);
+        localStorage.setItem(`scheduleTimestamp_${programId}`, newTimestamp);
+
+        setProgramTimestamps(prev => ({
+          ...prev,
+          [programId]: newTimestamp
+        }));
+      }
+
       setScheduleData(data);
     } catch (err) {
       console.error('Failed to load schedule:', err);
@@ -235,24 +303,54 @@ function App() {
     } else {
       setSelectedClasses([]);
     }
-    
+
     const savedProgram = localStorage.getItem('selectedProgram');
     if (savedProgram) {
       setSelectedProgram(savedProgram);
     }
-    
+
     const savedOptional = localStorage.getItem('enabledOptionalSubjects');
     if (savedOptional) {
       setEnabledOptionalSubjects(new Set(JSON.parse(savedOptional)));
     }
-    
+
     // Ukončit náhledový režim
     setHasSharedData(false);
     setPreviewData(null);
     setIsPreviewMode(false);
-    
+
     // Vyčistit URL
     window.history.replaceState({}, document.title, window.location.pathname);
+  };
+
+  // Zavření notifikace o změně rozvrhu a uložení nového hash
+  const dismissScheduleChange = () => {
+    if (selectedProgram && scheduleData) {
+      const newHash = generateScheduleHash(scheduleData);
+      const newTimestamp = new Date().toISOString();
+      localStorage.setItem(`scheduleHash_${selectedProgram}`, newHash);
+      localStorage.setItem(`scheduleTimestamp_${selectedProgram}`, newTimestamp);
+
+      // Aktualizovat timestamp v programTimestamps
+      setProgramTimestamps(prev => ({
+        ...prev,
+        [selectedProgram]: newTimestamp
+      }));
+    }
+    setScheduleChanged(false);
+  };
+
+  // Formátování data pro zobrazení
+  const formatDate = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleDateString('cs-CZ', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   useEffect(() => {
@@ -446,6 +544,8 @@ function App() {
                 onSelect={handleProgramSelect}
                 darkMode={darkMode}
                 loading={loadingPrograms}
+                programTimestamps={programTimestamps}
+                programLastVisited={programLastVisited}
               />
             </div>
 
@@ -589,6 +689,28 @@ function App() {
                   Uložit rozvrh
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Schedule Change Notification */}
+        {scheduleChanged && (
+          <div className={`${darkMode ? 'bg-amber-900/30 border-amber-800' : 'bg-amber-50 border-amber-200'} border rounded-xl p-4 mb-6`}>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className={`${darkMode ? 'text-amber-300' : 'text-amber-700'} font-medium mb-1`}>
+                  Rozvrh byl aktualizován
+                </p>
+                <p className={`text-sm ${darkMode ? 'text-amber-400/70' : 'text-amber-600/70'}`}>
+                  Rozvrh pro obor {changedProgramName} byl aktualizován od poslední návštěvy ({formatDate(changedTimestamp)})
+                </p>
+              </div>
+              <button
+                onClick={dismissScheduleChange}
+                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm"
+              >
+                Zavřít
+              </button>
             </div>
           </div>
         )}

@@ -6,8 +6,33 @@ const ProgramSelector = ({
   onSelect,
   darkMode,
   loading,
-  onAddCustom
+  onAddCustom,
+  programTimestamps = {},
+  programLastVisited = {}
 }) => {
+  // Formátování data pro zobrazení (krátký formát)
+  const formatShortDate = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleDateString('cs-CZ', {
+      day: 'numeric',
+      month: 'short'
+    });
+  };
+
+  // Formátování data pro tooltip (plný formát s časem)
+  const formatFullDate = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleDateString('cs-CZ', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="flex items-center gap-2 w-full">
       <select
@@ -23,11 +48,26 @@ const ProgramSelector = ({
         <option value="" disabled>
           Vyberte program...
         </option>
-        {programs.map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.name || p.id}
-          </option>
-        ))}
+        {programs.map((p) => {
+          const timestamp = programTimestamps[p.id];
+          const lastVisited = programLastVisited[p.id];
+          const dateStr = timestamp ? formatShortDate(timestamp) : '';
+
+          // Tooltip text
+          let tooltipText = p.name || p.id;
+          if (timestamp) {
+            tooltipText += `\nZměněno: ${formatFullDate(timestamp)}`;
+          }
+          if (lastVisited) {
+            tooltipText += `\nNavštíveno: ${formatFullDate(lastVisited)}`;
+          }
+
+          return (
+            <option key={p.id} value={p.id} title={tooltipText}>
+              {p.name || p.id}{dateStr ? ` • Změněno: ${dateStr}` : ''}
+            </option>
+          );
+        })}
       </select>
 
       {/* Tlačítko + (pokud ho používáš) */}
