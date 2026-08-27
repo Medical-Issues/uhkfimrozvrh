@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/rozvrhy/:path*",
+      "destination": "https://stag.uhk.cz/rozvrhy/:path*"
+    },
+    {
+      "source": "/api/stag/:path*",
+      "destination": "https://stag.uhk.cz/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
